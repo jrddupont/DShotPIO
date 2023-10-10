@@ -37,7 +37,9 @@ class DShotPIO:
     # Every time this is called, one 16 bit throttel packet will be sent on the configured wire
     def sendThrottleCommand(self, throttle):    
         if throttle<0:
-            raise InvalidThrottleException("throttle should be greater than 0")
+            raise InvalidThrottleException("Throttle should be greater than 0.")
+        if throttle>2047:
+            raise InvalidThrottleException("Throttle value is too high. Maximum value is 2047.")
         # Shift bits one left to set telemetry bit to 0
         throttleWithTelemetry = throttle << 1
         
