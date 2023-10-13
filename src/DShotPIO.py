@@ -3,6 +3,10 @@ from rp2 import PIO, StateMachine, asm_pio
 
 # DShot implementation derived from: https://brushlesswhoop.com/dshot-and-bidirectional-dshot/
 
+class InvalidThrottleException(Exception):
+    def __init__(self,message):
+        self.message=message
+
 # PIO assembly code for sending DShot throttle packets
 # This is set up to transmit the 16 high order bits of a 32 bit input from high to low order
 # Each bit is sent in 8 clock cycles
@@ -32,6 +36,10 @@ class DShotPIO:
 
     # Every time this is called, one 16 bit throttel packet will be sent on the configured wire
     def sendThrottleCommand(self, throttle):    
+        if throttle<0:
+            raise InvalidThrottleException("Throttle should be greater than 0.")
+        if throttle>2047:
+            raise InvalidThrottleException("Throttle value is too high. Maximum value is 2047.")
         # Shift bits one left to set telemetry bit to 0
         throttleWithTelemetry = throttle << 1
         
